@@ -1,0 +1,9 @@
+# Starter simulation configuration
+# CLI arguments currently override these values; this file documents defaults.
+grid_size=100
+num_drivers=1000
+num_riders=500
+ticks=200
+seed=42
+max_trip_ticks=5
+request_probability=0.25

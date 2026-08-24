@@ -1,0 +1,7 @@
+bin/*
+obj/*
+results/benchmarks/*.csv
+results/benchmarks/*.png
+*.o
+*.out
+.DS_Store
