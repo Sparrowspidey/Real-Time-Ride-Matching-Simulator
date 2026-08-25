@@ -145,6 +145,3 @@ Course project + personal project — parallel computing (OpenMP), C.
 
 ---
 
-##  License
-
-MIT (see `LICENSE`) — update if your course requires a different license.
