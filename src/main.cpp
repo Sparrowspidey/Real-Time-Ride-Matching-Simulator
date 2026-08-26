@@ -3,6 +3,7 @@
 #include "Driver.hpp"
 #include "Rider.hpp"
 #include "Geo.hpp"
+#include "Simulation.hpp"
 
 int main() {
 
@@ -30,6 +31,16 @@ int main() {
     std::cout << "Distance to rider: "
               << distance
               << '\n';
+
+    std::cout << "\n";
+
+    Simulation simulation(
+        10,     // drivers
+        5,      // riders
+        5       // ticks
+    );
+
+    simulation.run();
 
     return 0;
 }
