@@ -14,6 +14,8 @@ find_package(OpenMP REQUIRED)
 
 add_executable(ride_sim
     src/main.cpp
+    src/City.cpp
+    src/Ride.cpp
     src/Driver.cpp
     src/Rider.cpp
     src/Geo.cpp
