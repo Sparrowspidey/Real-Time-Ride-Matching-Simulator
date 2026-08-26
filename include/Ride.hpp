@@ -10,15 +10,17 @@ enum class RideStatus {
 class Ride {
 private:
     int id;
+    int riderId;
     int pickupCityId;
     int destinationCityId;
     int requestTime;
     RideStatus status;
 
 public:
-    Ride(int id, int pickupCityId, int destinationCityId, int requestTime);
+    Ride(int id, int riderId, int pickupCityId, int destinationCityId, int requestTime);
 
     int getId() const;
+    int getRiderId() const;
     int getPickupCityId() const;
     int getDestinationCityId() const;
     int getRequestTime() const;

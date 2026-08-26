@@ -1,7 +1,8 @@
 #include "Ride.hpp"
 
-Ride::Ride(int id, int pickupCityId, int destinationCityId, int requestTime)
+Ride::Ride(int id, int riderId, int pickupCityId, int destinationCityId, int requestTime)
     : id(id),
+      riderId(riderId),
       pickupCityId(pickupCityId),
       destinationCityId(destinationCityId),
       requestTime(requestTime),
@@ -10,6 +11,10 @@ Ride::Ride(int id, int pickupCityId, int destinationCityId, int requestTime)
 
 int Ride::getId() const {
     return id;
+}
+
+int Ride::getRiderId() const {
+    return riderId;
 }
 
 int Ride::getPickupCityId() const {
