@@ -10,7 +10,7 @@ Rider::Rider(
       pickup(pickup),
       destination(destination),
       requestTick(requestTick),
-      status(RiderStatus::PENDING) {
+      status(RiderStatus::IDLE) {
 }
 
 int Rider::getId() const {
@@ -27,6 +27,10 @@ Position Rider::getDestination() const {
 
 int Rider::getRequestTick() const {
     return requestTick;
+}
+
+void Rider::setRequestTick(int tick) {
+    requestTick = tick;
 }
 
 RiderStatus Rider::getStatus() const {

@@ -1,8 +1,15 @@
 #include "Ride.hpp"
 
-Ride::Ride(int id, int riderId, int pickupCityId, int destinationCityId, int requestTime)
+Ride::Ride(
+    int id,
+    int riderId,
+    int pickupCityId,
+    int destinationCityId,
+    int requestTime
+)
     : id(id),
       riderId(riderId),
+      driverId(0),
       pickupCityId(pickupCityId),
       destinationCityId(destinationCityId),
       requestTime(requestTime),
@@ -15,6 +22,10 @@ int Ride::getId() const {
 
 int Ride::getRiderId() const {
     return riderId;
+}
+
+int Ride::getDriverId() const {
+    return driverId;
 }
 
 int Ride::getPickupCityId() const {
@@ -35,4 +46,8 @@ RideStatus Ride::getStatus() const {
 
 void Ride::setStatus(RideStatus status) {
     this->status = status;
+}
+
+void Ride::setDriverId(int driverId) {
+    this->driverId = driverId;
 }

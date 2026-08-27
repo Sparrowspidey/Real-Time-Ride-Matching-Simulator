@@ -20,6 +20,9 @@ add_executable(ride_sim
     src/Rider.cpp
     src/Geo.cpp
     src/Simulation.cpp
+    src/Matching.cpp
+    src/RideExecution.cpp
+   
 )
 
 target_include_directories(ride_sim
