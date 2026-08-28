@@ -1,0 +1,8 @@
+{
+    "drivers": 1000,
+    "riders": 10000,
+    "ticks": 50,
+    "request_probability": 0.10,
+    "matching_mode": "parallel",
+    "threads": 10
+}

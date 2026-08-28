@@ -1,0 +1,34 @@
+REAL-TIME RIDE MATCHING SIMULATOR
+BENCHMARK ANALYSIS
+==================================================
+
+Baseline threads              : 1
+Baseline average time/tick    : 47.5221 ms
+
+Best thread count             : 12
+Best average time/tick        : 13.1490 ms
+Best total matching time      : 657.4480 ms
+
+Maximum speedup               : 3.61x
+Time improvement              : 72.33%
+
+Matched rides consistent      : YES
+Matched rides                 : 7912
+
+THREAD SCALING
+--------------------------------------------------
+ Threads    Avg/tick (ms)      Speedup     Efficiency
+       1          47.5221         1.00x        100.00%
+       2          48.4825         0.98x         49.01%
+       4          26.4979         1.79x         44.84%
+       6          17.2121         2.76x         46.02%
+       8          16.5364         2.87x         35.92%
+      10          13.9311         3.41x         34.11%
+      12          13.1490         3.61x         30.12%
+
+INTERPRETATION
+--------------------------------------------------
+The best observed configuration used 12 OpenMP threads.
+It reduced average matching time from 47.5221 ms/tick to 13.1490 ms/tick.
+This represents a 3.61x speedup and a 72.33% reduction in matching time.
+All thread configurations produced the same matched-ride count, indicating consistent simulation output.

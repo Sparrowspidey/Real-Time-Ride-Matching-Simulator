@@ -1,14 +1,28 @@
-bin/
-obj/
+# Build output
 build/
 
-*.o
-*.out
-*.exe
-*.obj
+# Python cache
+__pycache__/
+*.py[cod]
 
+# Virtual environments
+.venv/
+venv/
+env/
+
+# Generated visualization files
+# Keep the PNG files if you want them displayed on GitHub.
+# Uncomment these if you do NOT want generated images tracked.
+# visualization/*.png
+
+# IDE files
 .vscode/
-.DS_Store
+.idea/
 
-results/benchmarks/*.csv
-results/benchmarks/*.png
+# OS files
+.DS_Store
+Thumbs.db
+
+# Temporary files
+*.tmp
+*.log

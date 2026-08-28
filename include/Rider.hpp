@@ -18,6 +18,7 @@ public:
     Position getDestination() const;
 
     int getRequestTick() const;
+    void setRequestTick(int tick);
 
     RiderStatus getStatus() const;
     void setStatus(RiderStatus status);

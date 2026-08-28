@@ -1,35 +1,95 @@
 #include <iostream>
+#include <exception>
 
-#include "Driver.hpp"
-#include "Rider.hpp"
-#include "Geo.hpp"
+#include "Config.hpp"
+#include "Simulation.hpp"
 
 int main() {
 
-    Driver driver(
-        1,
-        {10.0, 20.0}
-    );
+    try {
 
-    Rider rider(
-        1,
-        {13.0, 24.0},
-        {50.0, 60.0},
-        0
-    );
+        Config config =
+            Config::load("config/config.json");
 
-    double distance = euclideanDistance(
-        rider.getPickup(),
-        driver.getPosition()
-    );
+        std::cout
+            << "========================================\n";
 
-    std::cout << "Driver ID: "
-              << driver.getId()
-              << '\n';
+        std::cout
+            << " Real-Time Ride Matching Simulator\n";
 
-    std::cout << "Distance to rider: "
-              << distance
-              << '\n';
+        std::cout
+            << "========================================\n";
+
+        std::cout
+            << "Drivers : "
+            << config.drivers
+            << '\n';
+
+        std::cout
+            << "Riders  : "
+            << config.riders
+            << '\n';
+
+        std::cout
+            << "Ticks   : "
+            << config.ticks
+            << '\n';
+
+        std::cout
+            << "Mode    : "
+            << (config.matchingMode == "serial"
+                ? "SERIAL"
+                : "OPENMP PARALLEL")
+            << '\n';
+
+        std::cout
+            << "Threads : "
+            << config.threads
+            << '\n';
+
+        std::cout
+            << "Request probability : "
+            << config.requestProbability
+            << '\n';
+
+        std::cout
+            << "========================================\n\n";
+
+        Simulation simulation(config);
+
+        simulation.run();
+
+        std::cout
+            << "\n========== BENCHMARK RESULT ==========\n";
+
+        std::cout
+            << "Matched rides       : "
+            << simulation.getTotalMatchedRides()
+            << '\n';
+
+        std::cout
+            << "Total matching time : "
+            << simulation.getTotalMatchingTimeMs()
+            << " ms\n";
+
+        std::cout
+            << "Average match/tick  : "
+            << simulation.getAverageMatchingTimeMs()
+            << " ms\n";
+
+        std::cout
+            << "======================================\n";
+
+    }
+    catch (const std::exception& exception) {
+
+        std::cerr
+            << "ERROR: "
+            << exception.what()
+            << '\n';
+
+        return 1;
+    }
 
     return 0;
 }
