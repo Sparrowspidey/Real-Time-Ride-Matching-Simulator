@@ -1,31 +1,48 @@
+
 #include "Simulation.hpp"
 
 #include <iostream>
+#include <fstream>
+#include <iomanip>
+#include <omp.h>
 #include <random>
+#include <chrono>
+#include <filesystem>
 
 namespace {
 
 constexpr double CITY_WIDTH = 100.0;
 constexpr double CITY_HEIGHT = 100.0;
 
-// Probability that a rider creates a request on a tick.
-constexpr double REQUEST_PROBABILITY = 0.10;
+
 
 }
 
+
 Simulation::Simulation(
-    int numDrivers,
-    int numRiders,
-    int numTicks
+    const Config& config
 )
-    : numDrivers_(numDrivers),
-      numRiders_(numRiders),
-      numTicks_(numTicks),
-      currentTick_(0) {
+    : numDrivers_(config.drivers),
+      numRiders_(config.riders),
+      numTicks_(config.ticks),
+      currentTick_(0),
+      requestProbability_(config.requestProbability),
+      matchingMode_(
+          config.matchingMode == "serial"
+              ? MatchingMode::SERIAL
+              : MatchingMode::PARALLEL
+      ),
+      matchingOperations_(0),
+      totalMatchedRides_(0),
+      totalMatchingTimeMs_(0.0) {
+
+    omp_set_num_threads(config.threads);
 
     initializeDrivers();
     initializeRiders();
 }
+
+
 
 void Simulation::initializeDrivers() {
 
@@ -110,7 +127,7 @@ void Simulation::generateRideRequests() {
             continue;
         }
 
-        if (probability(generator) < REQUEST_PROBABILITY) {
+        if (probability(generator) < requestProbability_) {
 
             int rideId = static_cast<int>(rides_.size()) + 1;
 
@@ -157,11 +174,24 @@ void Simulation::run() {
         tick();
     }
 
-    std::cout << "\nTotal ride requests: "
-              << rides_.size()
+    std::cout << "\nTotal rides matched: "
+              << totalMatchedRides_
               << '\n';
 
+    std::cout << "Total matching time: "
+              << totalMatchingTimeMs_
+              << " ms\n";
+
+    if (matchingOperations_ > 0) {
+
+        std::cout << "Average matching time per tick: "
+                  << totalMatchingTimeMs_ / matchingOperations_
+                  << " ms\n";
+    }
+
     std::cout << "Simulation completed.\n";
+
+    saveBenchmarkResult();
 }
 
 void Simulation::tick() {
@@ -172,15 +202,140 @@ void Simulation::tick() {
 
     generateRideRequests();
 
-    matchingEngine_.matchRides(
-    drivers_,
-    riders_,
-    rides_
-);
+    auto matchingStart =
+        std::chrono::high_resolution_clock::now();
+
+    int matchedRides = 0;
+
+    if (matchingMode_ == MatchingMode::SERIAL) {
+
+        matchedRides = matchingEngine_.matchRidesSerial(
+            drivers_,
+            riders_,
+            rides_
+        );
+
+    } else {
+
+        matchedRides = matchingEngine_.matchRidesParallel(
+            drivers_,
+            riders_,
+            rides_
+        );
+    }
+
+    totalMatchedRides_ += matchedRides;
+
+    auto matchingEnd =
+        std::chrono::high_resolution_clock::now();
+
+    double matchingTimeMs =
+        std::chrono::duration<double, std::milli>(
+            matchingEnd - matchingStart
+        ).count();
+
+    totalMatchingTimeMs_ += matchingTimeMs;
+
+    ++matchingOperations_;
 
     rideExecution_.update(
-    drivers_,
-    riders_,
-    rides_
+        drivers_,
+        riders_,
+        rides_
     );
 }
+
+void Simulation::saveBenchmarkResult() const {
+
+    const std::string resultsDirectory = "results";
+    const std::string outputFile =
+        resultsDirectory + "/benchmark.csv";
+
+    std::filesystem::create_directories(
+        resultsDirectory
+    );
+
+    std::ifstream existingFile(outputFile);
+
+    bool fileExists = existingFile.good();
+
+    existingFile.close();
+
+    std::ofstream file(
+        outputFile,
+        std::ios::app
+    );
+
+    if (!file.is_open()) {
+
+        std::cerr
+            << "Warning: Could not open "
+            << outputFile
+            << " for writing.\n";
+
+        return;
+    }
+
+    if (!fileExists) {
+
+        file
+            << "drivers,"
+            << "riders,"
+            << "ticks,"
+            << "mode,"
+            << "threads,"
+            << "matched_rides,"
+            << "total_matching_time_ms,"
+            << "average_matching_time_ms\n";
+    }
+
+    int threadCount = 1;
+
+    if (matchingMode_ == MatchingMode::PARALLEL) {
+        threadCount = omp_get_max_threads();
+    }
+
+    file << numDrivers_ << ','
+         << numRiders_ << ','
+         << numTicks_ << ','
+         << (matchingMode_ == MatchingMode::SERIAL
+             ? "serial"
+             : "parallel")
+         << ','
+         << threadCount
+         << ','
+         << totalMatchedRides_
+         << ','
+         << std::fixed
+         << std::setprecision(6)
+         << totalMatchingTimeMs_
+         << ','
+         << getAverageMatchingTimeMs()
+         << '\n';
+
+    file.close();
+
+    std::cout
+        << "Benchmark result saved to "
+        << outputFile
+        << '\n';
+}
+
+long long Simulation::getTotalMatchedRides() const {
+    return totalMatchedRides_;
+}
+
+double Simulation::getTotalMatchingTimeMs() const {
+    return totalMatchingTimeMs_;
+}
+
+double Simulation::getAverageMatchingTimeMs() const {
+
+    if (matchingOperations_ == 0) {
+        return 0.0;
+    }
+
+    return totalMatchingTimeMs_ /
+           static_cast<double>(matchingOperations_);
+}
+

@@ -8,7 +8,13 @@
 
 class MatchingEngine {
 public:
-    void matchRides(
+    int matchRidesSerial(
+        std::vector<Driver>& drivers,
+        std::vector<Rider>& riders,
+        std::vector<Ride>& rides
+    );
+
+    int matchRidesParallel(
         std::vector<Driver>& drivers,
         std::vector<Rider>& riders,
         std::vector<Ride>& rides
